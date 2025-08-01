@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Group Chat | Trip Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-xl mx-auto mt-10 p-4 bg-white rounded-xl shadow-md">
+    <h1 class="text-3xl text-center text-blue-600 font-semibold mb-4">Trip Group Chat</h1>
+    <div id="chatBox" class="h-64 overflow-y-scroll p-4 bg-gray-50 rounded mb-4"></div>
+    <div class="flex gap-2">
+      <input id="chatInput" type="text" placeholder="Type your message..." class="flex-1 p-2 border rounded">
+      <button onclick="sendMessage()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Send</button>
+    </div>
+    <div class="text-center mt-4"><a href="dashboard.html" class="text-blue-500 underline">← Back</a></div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    // Firebase Config
+    firebase.initializeApp({
+      apiKey: "AIzaSyCyIk56mSd_74ywFqKSVMwI9fma-zCGnbI",
+      authDomain: "trip-budget-tracker-e36ad.firebaseapp.com",
+      databaseURL: "https://trip-budget-tracker-e36ad-default-rtdb.firebaseio.com",
+      projectId: "trip-budget-tracker-e36ad",
+      appId: "1:312674525838:web:a9c23787900a9a88451fdf"
+    });
+
+    const db = firebase.database();
+    const userKey = localStorage.getItem("user");
+    if (!userKey) location.href = "index.html";
+
+    const userName = userKey.replace(/_/g, ".").split("@")[0];
+    const chatRef = db.ref("groupChat");
+    const box = document.getElementById("chatBox");
+
+    chatRef.on("child_added", snap => {
+      const d = snap.val();
+      const msgId = snap.key;
+
+      const el = document.createElement("div");
+      el.className = "mb-2";
+      el.innerHTML = `
+        <div class="flex justify-between items-center">
+          <span><strong>${d.name}:</strong> ${d.message}</span>
+          ${d.name === userName ? 
+            `<button onclick="deleteMessage('${msgId}')" class="ml-4 text-red-600 text-sm hover:underline">Delete</button>` : 
+            ""}
+        </div>`;
+      box.appendChild(el);
+      box.scrollTop = box.scrollHeight;
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById("chatInput").value.trim();
+      if (!msg) return;
+      chatRef.push({ name: userName, message: msg, timestamp: Date.now() });
+      document.getElementById("chatInput").value = "";
+    }
+
+    function deleteMessage(msgId) {
+      db.ref(`groupChat/${msgId}`).remove();
+    }
+  </script>
+</body>
+</html>

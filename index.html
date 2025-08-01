@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login / Sign Up | Trip Budget Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-md space-y-4">
+    <h1 class="text-2xl font-bold text-center text-indigo-700">Trip Budget Tracker</h1>
+
+    <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded" />
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded" />
+
+    <div class="flex gap-2">
+      <button onclick="login()" class="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">Login</button>
+      <button onclick="signup()" class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign Up</button>
+    </div>
+
+    <button onclick="forgotPassword()" class="text-sm text-left text-blue-500 hover:underline">Forgot Password?</button>
+  </div>
+
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyCyIk56mSd_74ywFqKSVMwI9fma-zCGnbI",
+    authDomain: "trip-budget-tracker-e36ad.firebaseapp.com",
+    databaseURL: "https://trip-budget-tracker-e36ad-default-rtdb.firebaseio.com",
+    projectId: "trip-budget-tracker-e36ad",
+    appId: "1:312674525838:web:a9c23787900a9a88451fdf"
+  });
+  const db = firebase.database();
+
+  function signup() {
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const pwd = document.getElementById("password").value.trim();
+    if (!email || !pwd) return alert("Please fill all fields.");
+    const key = email.replace(/\./g, "_");
+    db.ref("users/" + key).once("value").then(snap => {
+      if (snap.exists()) return alert("User already exists.");
+      db.ref("users/" + key).set({ email, password: pwd, friends: {}, expenses: [], reminders: [] })
+        .then(() => alert("Sign up successful! You can now login."));
+    });
+  }
+
+  function login() {
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const pwd = document.getElementById("password").value.trim();
+    if (!email || !pwd) return alert("Please fill all fields.");
+    const key = email.replace(/\./g, "_");
+    db.ref("users/" + key).once("value").then(snap => {
+      if (!snap.exists()) return alert("User not found.");
+      if (snap.val().password === pwd) {
+        localStorage.setItem("user", key);
+        window.location.href = "dashboard.html";
+      } else alert("Incorrect password.");
+    });
+  }
+
+  function forgotPassword() {
+    const email = prompt("Enter your registered email:");
+    if (!email) return;
+    const key = email.trim().toLowerCase().replace(/\./g, "_");
+    db.ref("users/" + key).once("value").then(snap => {
+      if (!snap.exists()) return alert("User not found.");
+      const newPwd = prompt("Enter new password:");
+      if (!newPwd) return alert("Password not changed.");
+      db.ref("users/" + key + "/password").set(newPwd).then(() => alert("Password reset successful!"));
+    });
+  }
+</script>
+</body>
+</html>
