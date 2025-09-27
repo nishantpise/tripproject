@@ -1,0 +1,63 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Trip Budget Tracker</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5">
+  <div class="max-w-3xl mx-auto bg-white rounded-xl p-6 shadow-md">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">🌍 Trip Budget Tracker</h1>
+
+    <!-- Login/Register -->
+    <div id="auth-section" class="space-y-3 mb-6">
+      <input type="email" id="email" placeholder="Email" class="w-full border p-2 rounded" />
+      <input type="password" id="password" placeholder="Password" class="w-full border p-2 rounded" />
+      <div class="flex space-x-2">
+        <button id="loginBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Login</button>
+        <button id="registerBtn" class="bg-green-500 text-white px-4 py-2 rounded">Register</button>
+      </div>
+    </div>
+
+    <!-- Trip Create -->
+    <div id="trip-section" class="hidden mb-6">
+      <input type="text" id="tripName" placeholder="Trip Name" class="w-full border p-2 mb-2 rounded" />
+      <input type="number" id="tripBudget" placeholder="Total Budget" class="w-full border p-2 mb-2 rounded" />
+      <button id="createTripBtn" class="bg-purple-700 text-white px-4 py-2 rounded w-full">Create Trip</button>
+    </div>
+
+    <!-- All Trips -->
+    <ul id="tripList" class="space-y-5"></ul>
+  </div>
+ <!-- Firebase App (core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>app.js</script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getDatabase } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyIk56mSd_74ywFqKSVMwI9fma-zCGnbI",
+      authDomain: "trip-budget-tracker-e36ad.firebaseapp.com",
+      databaseURL: "https://trip-budget-tracker-e36ad-default-rtdb.firebaseio.com",
+      projectId: "trip-budget-tracker-e36ad",
+      storageBucket: "trip-budget-tracker-e36ad.appspot.com",
+      messagingSenderId: "312674525838",
+      appId: "1:312674525838:web:a9c23787900a9a88451fdf",
+      measurementId: "G-5VB2GHHR3R"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    console.log("Firebase initialized");
+  </script>
+
+</body>
+</html>
