@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dashboard | Trip Budget Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+<nav class="bg-white px-6 py-4 flex justify-between items-center shadow">
+  <h1 class="text-2xl font-bold text-blue-600">Trip Budget Tracker</h1>
+  <div class="flex items-center gap-4">
+    <span id="userInfo" class="text-gray-700"></span>
+    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+  </div>
+</nav>
+
+<main class="p-6 max-w-4xl mx-auto bg-white mt-6 rounded-xl shadow-lg">
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 mb-6 text-center">
+    <div class="bg-blue-100 p-4 rounded-xl"><h2>Total Friends</h2><p id="friendCount" class="text-2xl"></p></div>
+    <div class="bg-green-100 p-4 rounded-xl"><h2>Total Expenses</h2><p id="totalExpense" class="text-2xl"></p></div>
+  </div>
+
+  <!-- Friend Section -->
+  <section id="friends" class="mb-6">
+    <h2 class="font-semibold text-lg mb-2">Add a Friend</h2>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <input id="friendEmail" type="email" placeholder="Friend's Email" class="flex-grow p-2 border rounded">
+      <button onclick="addFriend()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add</button>
+    </div>
+    <ul id="friendsList" class="mt-4 list-disc ml-6"></ul>
+  </section>
+
+  <!-- Expense Section -->
+  <section id="expenses">
+    <h2 class="font-semibold text-lg mb-2">Add an Expense</h2>
+    <div class="flex flex-col sm:flex-row gap-2">
+      <input id="expenseTitle" type="text" placeholder="Title" class="flex-grow p-2 border rounded">
+      <input id="expenseAmount" type="number" placeholder="Amount" class="w-full sm:w-36 p-2 border rounded">
+      <button onclick="addExpense()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add</button>
+    </div>
+    <ul id="expensesList" class="mt-4 ml-6 list-disc"></ul>
+  </section>
+
+  <div class="mt-6 text-center"><a href="chat.html" class="text-blue-500 hover:underline mr-4">Chat 💬</a><a href="reminder.html" class="text-blue-500 hover:underline">Reminders</a></div>
+</main>
+
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyCyIk56mSd_74ywFqKSVMwI9fma-zCGnbI",
+    authDomain: "trip-budget-tracker-e36ad.firebaseapp.com",
+    databaseURL: "https://trip-budget-tracker-e36ad-default-rtdb.firebaseio.com",
+    projectId: "trip-budget-tracker-e36ad",
+    appId: "1:312674525838:web:a9c23787900a9a88451fdf"
+  });
+  const db = firebase.database();
+  const userKey = localStorage.getItem("user");
+  if (!userKey) location.href = "index.html";
+  document.getElementById("userInfo").innerText = userKey.replace(/_/g, ".");
+  const userRef = db.ref(`users/${userKey}`);
+
+  userRef.on("value", snap => {
+    const data = snap.val() || {};
+    const fr = data.friends || {}, ex = data.expenses || {};
+    document.getElementById("friendCount").innerText = Object.keys(fr).length;
+    document.getElementById("totalExpense").innerText = `₹${Object.values(ex||{}).reduce((a,b)=>a+parseFloat(b.amount||0),0)}`;
+    document.getElementById("friendsList").innerHTML = Object.entries(fr).map(([id,email])=>
+      `<li class="mb-1">${email} <button onclick="removeFriend('${id}')" class="ml-4 bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Remove</button></li>`
+    ).join('');
+    document.getElementById("expensesList").innerHTML = Object.entries(ex).map(([id,item]) =>
+      `<li class="mb-1">${item.title}: ₹${item.amount} <button onclick="removeExpense('${id}')" class="ml-4 bg-red-500 text-white px-5 py-1 rounded hover:bg-red-600">Remove Expense</button></li>`
+    ).join('');
+  });
+
+  function addFriend() {
+    const v = document.getElementById("friendEmail").value.trim();
+    if (!v) return;
+    db.ref(`users/${userKey}/friends`).push(v);
+  }
+  function removeFriend(id) { db.ref(`users/${userKey}/friends/${id}`).remove(); }
+  function addExpense() {
+    const t = document.getElementById("expenseTitle").value.trim(), a = document.getElementById("expenseAmount").value.trim();
+    if (!t||!a) return;
+    db.ref(`users/${userKey}/expenses`).push({ title: t, amount: a });
+  }
+  function removeExpense(id) { db.ref(`users/${userKey}/expenses/${id}`).remove(); }
+  function logout() { localStorage.removeItem("user"); location.href = "index.html"; }
+</script>
+</body>
+</html>

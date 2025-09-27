@@ -1,0 +1,142 @@
+/* Import Tailwind CSS base styles, components, and utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply custom styles and components using @layer */
+@layer base {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+@layer components {
+    /* Form Inputs */
+    .form-input {
+        @apply w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-300;
+    }
+    
+    .form-checkbox {
+        @apply w-5 h-5 bg-gray-600 border-gray-500 rounded text-purple-500 focus:ring-purple-500;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        @apply w-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 shadow-lg transform hover:scale-105 transition-all duration-300;
+    }
+    .btn-secondary {
+        @apply w-full flex items-center justify-center bg-gray-700 text-gray-200 font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-all duration-300;
+    }
+    .btn-icon {
+        @apply flex items-center justify-center w-10 h-10 rounded-full text-white transform hover:scale-110 transition-transform duration-300 shadow;
+    }
+
+    /* Cards */
+    .card {
+        @apply bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700;
+    }
+    .card-title {
+        @apply text-xl font-bold text-gray-200;
+    }
+
+    /* Auth Page Tabs */
+    .tab-btn {
+        @apply w-1/3 py-3 text-center font-semibold text-gray-400 border-b-2 border-transparent hover:bg-gray-700 transition-all duration-300;
+    }
+    .tab-btn.active {
+        @apply text-white border-purple-500;
+    }
+
+    /* Sidebar Navigation */
+    .nav-link {
+        @apply flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200;
+    }
+    .nav-link.active {
+        @apply bg-purple-600 text-white font-semibold shadow-inner;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        @apply p-4 rounded-2xl max-w-sm relative;
+    }
+    .chat-bubble.sent {
+        @apply bg-purple-600 rounded-br-lg ml-auto;
+    }
+    .chat-bubble.received {
+        @apply bg-gray-700 rounded-bl-lg mr-auto;
+    }
+    
+    /* Modal */
+    .modal-backdrop {
+        @apply fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50;
+    }
+    .modal-content {
+        @apply bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md m-4;
+    }
+    
+    /* Toast Notifications */
+    .toast {
+        @apply text-white font-semibold py-3 px-6 rounded-lg shadow-xl mb-3 transform translate-x-full opacity-0 transition-all duration-500 ease-in-out;
+    }
+    .toast.show {
+        @apply translate-x-0 opacity-100;
+    }
+}
+
+/* Custom Animations and Transitions */
+.page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #111827; /* bg-gray-900 */
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 1;
+    animation: fade-out 0.5s forwards;
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+body.fade-out .page-transition {
+    opacity: 0;
+    animation: fade-in 0.5s forwards;
+}
+
+@keyframes fade-in {
+    to {
+        opacity: 1;
+    }
+}
+
+.form-content {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.form-content.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #1f2937; /* bg-gray-800 */
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #4b5563; /* bg-gray-600 */
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6b7280; /* bg-gray-500 */
+}

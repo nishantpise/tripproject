@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Daily Reminders | Trip Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
+    <h1 class="text-3xl text-blue-600 font-semibold text-center mb-6">📅 Daily Plan Reminders</h1>
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+      <input id="planDate" type="date" class="p-2 border rounded">
+      <input id="planText" type="text" placeholder="Plan (e.g. Visit beach)" class="p-2 border rounded">
+      <button onclick="addReminder()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add</button>
+    </div>
+    <h2 class="text-xl font-semibold mb-2">Your Reminders</h2>
+    <ul id="reminderList" class="list-disc ml-6 text-gray-700"></ul>
+    <div class="text-center mt-6"><a href="dashboard.html" class="text-blue-500 underline">← Back to Dashboard</a></div>
+  </div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyCyIk56mSd_74ywFqKSVMwI9fma-zCGnbI",
+    authDomain: "trip-budget-tracker-e36ad.firebaseapp.com",
+    databaseURL: "https://trip-budget-tracker-e36ad-default-rtdb.firebaseio.com",
+    projectId: "trip-budget-tracker-e36ad",
+    appId: "1:312674525838:web:a9c23787900a9a88451fdf"
+  });
+  const db = firebase.database();
+  const userKey = localStorage.getItem("user");
+  if (!userKey) location.href = "index.html";
+  const list = document.getElementById("reminderList");
+
+  function loadReminders() {
+    db.ref(`users/${userKey}/reminders`).once("value", snap => {
+      const arr = snap.val() || [];
+      list.innerHTML = arr.map(r => `<li><strong>${r.date}</strong>: ${r.text}</li>`).join("");
+    });
+  }
+  function addReminder() {
+    const d = document.getElementById("planDate").value;
+    const t = document.getElementById("planText").value.trim();
+    if (!d || !t) return alert("Enter both date & plan");
+    db.ref(`users/${userKey}/reminders`).once("value", snap => {
+      const arr = snap.val() || [];
+      arr.push({ date: d, text: t });
+      db.ref(`users/${userKey}/reminders`).set(arr).then(loadReminders);
+    });
+  }
+  loadReminders();
+</script>
+</body>
+</html>
